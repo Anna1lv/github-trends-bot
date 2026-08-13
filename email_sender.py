@@ -1,5 +1,5 @@
-import email.message
 import smtplib
+from email.mime.text import MIMEText
 
 
 def gerar_html_email(repositorios):
@@ -57,21 +57,20 @@ def gerar_html_email(repositorios):
 def enviar_email(
     remetente, senha_app, destinatario, assunto, repositorios
 ):
-    """Envia o e-mail formatado via servidor SMTP (Gmail)."""
+    # Envia o e-mail formatado via servidor SMTP (Gmail).
     corpo_html = gerar_html_email(repositorios)
 
-    msg = email.message.Message()
+    # MIMEText cuida do charset/encoding automaticamente 
+    msg = MIMEText(corpo_html, "html", "utf-8")
     msg["Subject"] = assunto
     msg["From"] = remetente
     msg["To"] = destinatario
-    msg.add_header("Content-Type", "text/html")
-    msg.set_payload(corpo_html, charset="utf-8")
 
     try:
         s = smtplib.SMTP("smtp.gmail.com", 587)
         s.starttls()
         s.login(remetente, senha_app)
-        s.sendmail(remetente, [destinatario], msg.as_string().encode("utf-8"))
+        s.sendmail(remetente, [destinatario], msg.as_string())
         s.quit()
         print("✅ E-mail enviado com sucesso!")
         return True

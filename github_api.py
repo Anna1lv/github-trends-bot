@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 import requests
 
@@ -17,6 +18,10 @@ def buscar_repositorios_em_alta(linguagem=None, dias=7, quantidade=5):
     url = f"https://api.github.com/search/repositories?q={query}&sort=stars&order=desc"
 
     headers = {"User-Agent": "GitHub-Trends-Bot-App"}
+
+    token = os.getenv("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
 
     try:
         resposta = requests.get(url, headers=headers)
